@@ -73,6 +73,14 @@ public class PetRestControllerV1 implements PetsApi {
     @PreAuthorize("hasRole(@roles.OWNER_ADMIN)")
     @Override
     public ResponseEntity<PetDto> updatePet(Integer petId, PetDto petDto) {
+        // NOTE COURS A26 : même règle métier ("un nom ne doit pas contenir de chiffres")
+        // que dans OwnerRestControllerV1.isValidPersonName(), mais réécrite différemment ici
+        // -- exemple typique de duplication qui dérive avec le temps (ex. si on change la
+        // règle un jour, il faut penser à modifier les DEUX endroits). Bon candidat pour un
+        // Extract Class vers un validateur partagé (semaine 5-6).
+        if (petDto.getName() != null && containsDigit(petDto.getName())) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         Pet currentPet = this.clinicService.findPetById(petId);
         if (currentPet == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -82,6 +90,10 @@ public class PetRestControllerV1 implements PetsApi {
         currentPet.setType(petMapper.toPetType(petDto.getType()));
         this.clinicService.savePet(currentPet);
         return new ResponseEntity<>(petMapper.toPetDto(currentPet), HttpStatus.NO_CONTENT);
+    }
+
+    private boolean containsDigit(String value) {
+        return value.chars().anyMatch(Character::isDigit);
     }
 
     @PreAuthorize("hasRole(@roles.OWNER_ADMIN)")

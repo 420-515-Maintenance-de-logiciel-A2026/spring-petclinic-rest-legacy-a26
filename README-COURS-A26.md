@@ -27,6 +27,18 @@ Quelques pistes de réflexion pour vous lancer (sans tout dévoiler) :
   quand même dans les jeux de données de test ?
 * Une règle de validation métier (âge d'un animal) semble avoir été modifiée à un moment donné
   d'une façon qui n'a plus vraiment de sens. Est-ce cohérent avec le message d'erreur affiché ?
+* Deux contrôleurs différents (propriétaires et animaux) appliquent « la même » règle de validation
+  sur un nom, mais pas tout à fait de la même façon. Que se passe-t-il si la règle change un jour
+  dans un seul des deux endroits ?
+* Un `try/catch` valide un numéro de téléphone... mais que se passe-t-il vraiment quand vous
+  entrez un vrai numéro à 10 chiffres ? Le code « avale » silencieusement quelque chose d'important.
+* Une requête de recherche par nom de famille est construite d'une façon qui devrait faire dresser
+  les cheveux sur la tête de quiconque a suivi un cours de sécurité informatique. Essayez avec un
+  nom de famille contenant une apostrophe...
+
+> 📌 Ces indices sont volontairement vagues. Le catalogue complet des bogues intentionnels (avec
+> fichiers et lignes précises) est réservé à l'enseignant·e dans `Notes-de-cours-A26-detaillees.md`
+> (section 0.5) — ne le consultez pas si vous voulez garder le plaisir de la découverte !
 
 ## 📄 Demande d'évolution de la session
 

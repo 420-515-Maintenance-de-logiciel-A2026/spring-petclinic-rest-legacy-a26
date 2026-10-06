@@ -1,11 +1,17 @@
 # This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Java CI on master branch
+# NOTE COURS A26 : workflow hérité du dépôt upstream spring-petclinic-rest, conservé
+# tel quel comme EXEMPLE de pipeline d'entreprise (voir Notes-de-cours-A26-detaillees.md,
+# section 0). Déclenchement automatique désactivé (branche/organisation SonarCloud/secrets
+# ne correspondent pas à ce dépôt de cours) : passé en workflow_dispatch (manuel) pour
+# rester consultable/exécutable sur demande sans casser la CI des étudiants dès le TP1.
+# Le VRAI pipeline du cours est celui construit progressivement par les équipes
+# (semaines 5, 7, 9, 11-12).
+name: Java CI on master branch (RÉFÉRENCE - déclenchement manuel)
 
 on:
-  push:
-    branches: [ master ]
+  workflow_dispatch:
 
 jobs:
   build:

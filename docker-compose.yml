@@ -1,4 +1,17 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.multistage   # self-contained — remplacez par "Dockerfile" (Option A)
+                                           # si vous préférez réutiliser un .jar déjà construit
+                                           # par `./mvnw clean package` ou votre pipeline CI
+    ports:
+      - "9966:9966"
+    # Profil par défaut (h2, en mémoire) : aucune dépendance à mysql/postgres ci-dessous.
+    # Pour utiliser mysql ou postgres, changez SPRING_PROFILES_ACTIVE et démarrez le service
+    # correspondant avec `docker compose --profile mysql up` (ou postgres).
+    environment:
+      - SPRING_PROFILES_ACTIVE=h2,spring-data-jpa
   mysql:
     image: mysql:8.4
     command: --mysql-native-password=ON

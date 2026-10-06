@@ -1,8 +1,13 @@
-name: Java CI for Pull Request
+# NOTE COURS A26 : workflow hérité du dépôt upstream, conservé comme exemple de référence
+# (voir Notes-de-cours-A26-detaillees.md, section 0). Ce workflow se déclenchait
+# automatiquement sur CHAQUE Pull Request -- désactivé ici (passé en workflow_dispatch)
+# pour éviter un échec systématique et déroutant dès le TP1 (le dépôt du cours n'a pas les
+# mêmes secrets/organisation que le projet upstream). Les équipes construisent leur propre
+# pipeline PR à partir de la semaine 5.
+name: Java CI for Pull Request (RÉFÉRENCE - déclenchement manuel)
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_dispatch:
 
 jobs:
   build:

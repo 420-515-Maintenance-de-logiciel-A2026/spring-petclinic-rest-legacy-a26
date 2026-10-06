@@ -1,0 +1,34 @@
+# Dockerfile.multistage — Option B : construction multi-étapes (self-contained)
+#
+# Ce Dockerfile compile le projet À L'INTÉRIEUR de l'image (étape "build"), puis ne conserve
+# dans l'image finale que le .jar produit et un JRE pour l'exécuter (étape "runtime").
+# Utile quand AUCUNE étape de build externe n'existe déjà (ex. build local de développement,
+# ou projet sans pipeline CI) — redondant si un job CI a déjà produit et testé le .jar
+# (voir Option A, dans Dockerfile, pour ce cas).
+
+# --- Étape 1 : build -------------------------------------------------------
+FROM eclipse-temurin:21-jdk-alpine AS build
+
+WORKDIR /app
+
+# Copié séparément pour profiter du cache Docker : si seul le code source change,
+# cette couche (téléchargement des dépendances) n'est pas reconstruite.
+COPY mvnw pom.xml ./
+COPY .mvn .mvn
+RUN ./mvnw -B dependency:go-offline
+
+COPY src src
+RUN ./mvnw -B clean package -DskipTests
+
+# --- Étape 2 : runtime -------------------------------------------------------
+FROM eclipse-temurin:21-jre-alpine
+
+WORKDIR /app
+
+# Ne récupère que le .jar produit par l'étape "build" — le JDK, Maven et le code source
+# ne font jamais partie de l'image finale.
+COPY --from=build /app/target/spring-petclinic-rest-*.jar app.jar
+
+EXPOSE 9966
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

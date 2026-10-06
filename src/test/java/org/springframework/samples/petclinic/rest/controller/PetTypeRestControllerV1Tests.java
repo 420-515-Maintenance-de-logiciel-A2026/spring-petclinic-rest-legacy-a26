@@ -194,26 +194,10 @@ class PetTypeRestControllerV1Tests {
         		.andExpect(status().isBadRequest());
      }
 
-    @Test
-    @WithMockUser(roles="VET_ADMIN")
-    void testUpdatePetTypeSuccess() throws Exception {
-    	given(this.clinicService.findPetTypeById(2)).willReturn(petTypes.get(1));
-    	PetType newPetType = petTypes.get(1);
-    	newPetType.setName("dog I");
-    	ObjectMapper mapper = new ObjectMapper();
-        String newPetTypeAsJSON = mapper.writeValueAsString(petTypeMapper.toPetTypeDto(newPetType));
-    	this.mockMvc.perform(put("/api/pettypes/2")
-    		.content(newPetTypeAsJSON).accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
-        	.andExpect(content().contentType("application/json"))
-        	.andExpect(status().isNoContent());
-
-    	this.mockMvc.perform(get("/api/pettypes/2")
-           	.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json"))
-            .andExpect(jsonPath("$.id").value(2))
-            .andExpect(jsonPath("$.name").value("dog I"));
-    }
+    // TODO COURS A26 (semaine 4) : testUpdatePetTypeSuccess a été retiré volontairement.
+    // Réécrivez ce test de régression avant de toucher au code de mise à jour d'un type
+    // d'animal (comportement attendu : PUT /api/pettypes/{id} retourne 204 et persiste le
+    // changement de nom).
 
     @Test
     @WithMockUser(roles="VET_ADMIN")

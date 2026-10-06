@@ -33,6 +33,10 @@ import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 /**
  * @author Vitaliy Fedoriv
  */
@@ -45,11 +49,13 @@ public class VisitRestControllerV1 implements VisitsApi {
     private final ClinicService clinicService;
 
     private final VisitMapper visitMapper;
+    private static final Logger logger = LoggerFactory.getLogger(VisitRestControllerV1.class);
 
     public VisitRestControllerV1(ClinicService clinicService, VisitMapper visitMapper) {
         this.clinicService = clinicService;
         this.visitMapper = visitMapper;
     }
+
 
 
     @PreAuthorize("hasRole(@roles.OWNER_ADMIN)")

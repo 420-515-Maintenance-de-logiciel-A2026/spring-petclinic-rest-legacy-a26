@@ -44,6 +44,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 /**
  * @author Vitaliy Fedoriv
  */
@@ -61,6 +65,8 @@ public class OwnerRestControllerV1 implements OwnersApi {
 
     private final VisitMapper visitMapper;
 
+    private static final Logger logger = LoggerFactory.getLogger(OwnerRestControllerV1.class);
+
     public OwnerRestControllerV1(ClinicService clinicService,
                                  OwnerMapper ownerMapper,
                                  PetMapper petMapper,
@@ -74,15 +80,20 @@ public class OwnerRestControllerV1 implements OwnersApi {
     @PreAuthorize("hasRole(@roles.OWNER_ADMIN)")
     @Override
     public ResponseEntity<List<OwnerDto>> listOwners(String lastName) {
+
         Collection<Owner> owners;
+
+        logger.info("INFO - Execution de la méthode listOwners avec comme paramètre, lastName = " + lastName);
         if (lastName != null) {
             owners = this.clinicService.findOwnerByLastName(lastName);
         } else {
             owners = this.clinicService.findAllOwners();
         }
         if (owners.isEmpty()) {
+            logger.warn("Aucun owner n'a été trouvé, probablement tu devrais vérifier la BD");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
         return new ResponseEntity<>(ownerMapper.toOwnerDtoCollection(owners), HttpStatus.OK);
     }
 
@@ -99,6 +110,13 @@ public class OwnerRestControllerV1 implements OwnersApi {
     @PreAuthorize("hasRole(@roles.OWNER_ADMIN)")
     @Override
     public ResponseEntity<OwnerDto> addOwner(OwnerFieldsDto ownerFieldsDto) {
+        // NOTE COURS A26 : validation manuelle redondante avec la contrainte @Pattern déjà
+        // posée sur Owner.telephone -- duplication de règle métier qui peut dériver dans le
+        // temps (bon candidat de réusinage, semaine 5-6 : extraire une seule source de vérité).
+        if (!isValidPersonName(ownerFieldsDto.getFirstName()) || !isValidPersonName(ownerFieldsDto.getLastName())) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        assertTelephoneIsNumeric(ownerFieldsDto.getTelephone());
         HttpHeaders headers = new HttpHeaders();
         Owner owner = ownerMapper.toOwner(ownerFieldsDto);
         this.clinicService.saveOwner(owner);
@@ -106,6 +124,41 @@ public class OwnerRestControllerV1 implements OwnersApi {
         headers.setLocation(UriComponentsBuilder.newInstance()
             .path("/api/owners/{id}").buildAndExpand(owner.getId()).toUri());
         return new ResponseEntity<>(ownerDto, headers, HttpStatus.CREATED);
+    }
+
+    /**
+     * NOTE COURS A26 : logique de validation de nom dupliquée (voir aussi
+     * PetRestControllerV1, variante légèrement différente) -- duplication volontaire pour
+     * l'exercice de réusinage (Extract Method / Extract Class vers un seul validateur
+     * partagé). Règle : un nom de personne ne devrait pas contenir de chiffres.
+     */
+    private boolean isValidPersonName(String name) {
+        if (name == null || name.isBlank()) {
+            return false;
+        }
+        for (char c : name.toCharArray()) {
+            if (Character.isDigit(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * NOTE COURS A26 (bogue intentionnel) : vérification numérique redondante avec la
+     * validation déjà faite par @Digits/@Pattern sur Owner.telephone. Le bloc catch vide
+     * avale silencieusement l'exception -- un vrai numéro de téléphone à 10 chiffres
+     * (ex. 6085551023 ~ 6,08 milliards) dépasse Integer.MAX_VALUE (~2,14 milliards) et fait
+     * donc TOUJOURS échouer ce parseInt, sans jamais être signalé à personne. Classique
+     * anti-patron "avaler l'exception" (Sonar : bloc catch vide / exception ignorée) --
+     * à repérer et corriger en semaine 9 (qualité/sécurité du code).
+     */
+    private void assertTelephoneIsNumeric(String telephone) {
+        try {
+            Integer.parseInt(telephone);
+        } catch (NumberFormatException e) {
+            // volontairement vide -- voir note ci-dessus
+        }
     }
 
     @PreAuthorize("hasRole(@roles.OWNER_ADMIN)")

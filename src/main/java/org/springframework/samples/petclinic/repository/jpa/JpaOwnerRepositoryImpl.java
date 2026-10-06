@@ -60,8 +60,11 @@ public class JpaOwnerRepositoryImpl implements OwnerRepository {
     public Collection<Owner> findByLastName(String lastName) {
         // using 'join fetch' because a single query should load both owners and pets
         // using 'left join fetch' because it might happen that an owner does not have pets yet
-        Query query = this.em.createQuery("SELECT DISTINCT owner FROM Owner owner left join fetch owner.pets WHERE owner.lastName LIKE :lastName");
-        query.setParameter("lastName", lastName + "%");
+        // NOTE (bogue intentionnel A26) : le nom de famille est concaténé directement dans le JPQL
+        // au lieu d'utiliser un paramètre lié (":lastName"). C'est une injection JPQL/SQL classique
+        // exploitable via GET /api/owners?lastName=... — voir README-COURS-A26.md (semaine sécurité).
+        Query query = this.em.createQuery(
+            "SELECT DISTINCT owner FROM Owner owner left join fetch owner.pets WHERE owner.lastName LIKE '" + lastName + "%'");
         return query.getResultList();
     }
 

@@ -160,26 +160,12 @@ class SpecialtyRestControllerV1Tests {
         		.andExpect(status().isBadRequest());
      }
 
-    @Test
-    @WithMockUser(roles="VET_ADMIN")
-    void testUpdateSpecialtySuccess() throws Exception {
-    	given(this.clinicService.findSpecialtyById(2)).willReturn(specialties.get(1));
-    	Specialty newSpecialty = specialties.get(1);
-    	newSpecialty.setName("surgery I");
-    	ObjectMapper mapper = new ObjectMapper();
-        String newSpecialtyAsJSON = mapper.writeValueAsString(specialtyMapper.toSpecialtyDto(newSpecialty));
-    	this.mockMvc.perform(put("/api/specialties/2")
-    		.content(newSpecialtyAsJSON).accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
-        	.andExpect(content().contentType("application/json"))
-        	.andExpect(status().isNoContent());
-
-    	this.mockMvc.perform(get("/api/specialties/2")
-           	.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json"))
-            .andExpect(jsonPath("$.id").value(2))
-            .andExpect(jsonPath("$.name").value("surgery I"));
-    }
+    // TODO COURS A26 (semaine 4) : deux tests ont été retirés ici volontairement
+    // (testUpdateSpecialtySuccess, testDeleteSpecialtySuccess). Avant de corriger tout bogue
+    // touchant la mise à jour ou la suppression d'une spécialité, réécrivez d'abord ces tests
+    // de régression vous-mêmes (comportement attendu : PUT /api/specialties/{id} retourne 204
+    // et persiste le changement ; DELETE /api/specialties/{id} retourne 204). Voir
+    // README-COURS-A26.md.
 
     @Test
     @WithMockUser(roles="VET_ADMIN")
@@ -193,17 +179,9 @@ class SpecialtyRestControllerV1Tests {
         	.andExpect(status().isBadRequest());
      }
 
-    @Test
-    @WithMockUser(roles="VET_ADMIN")
-    void testDeleteSpecialtySuccess() throws Exception {
-    	Specialty newSpecialty = specialties.get(0);
-    	ObjectMapper mapper = new ObjectMapper();
-        String newSpecialtyAsJSON = mapper.writeValueAsString(specialtyMapper.toSpecialtyDto(newSpecialty));
-    	given(this.clinicService.findSpecialtyById(1)).willReturn(specialties.get(0));
-    	this.mockMvc.perform(delete("/api/specialties/1")
-    		.content(newSpecialtyAsJSON).accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
-        	.andExpect(status().isNoContent());
-    }
+    // TODO COURS A26 (semaine 4) : testDeleteSpecialtySuccess a été retiré volontairement.
+    // Réécrivez ce test de régression avant de toucher au code de suppression d'une
+    // spécialité (comportement attendu : DELETE /api/specialties/{id} retourne 204).
 
     @Test
     @WithMockUser(roles="VET_ADMIN")
