@@ -24,6 +24,9 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
+          
+      - name: Provide access to mvnw
+        run: chmod +x ./mvnw
 
       - name: Build with Maven
         run: ./mvnw -B package -DskipTests
