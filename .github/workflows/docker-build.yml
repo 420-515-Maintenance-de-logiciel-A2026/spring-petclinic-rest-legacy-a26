@@ -38,11 +38,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # 1. Convertir en minuscules et stocker dans GITHUB_ENV
+      - name: Convertir le nom du compte/organisation en minuscules
+        run: echo "OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_ENV"
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
+            ghcr.io/${{ env.OWNER_LC }}/petclinic:latest
+            ghcr.io/${{ env.OWNER_LC }}/petclinic:${{ github.sha }}
