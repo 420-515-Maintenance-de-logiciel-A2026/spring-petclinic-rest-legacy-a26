@@ -39,7 +39,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: sfostine
+          username: ${{ vars.USERNAME }}
           password: ${{ secrets.PERSONAL_GHCR_PAT }}
 
       - name: Set up Docker Buildx
@@ -55,4 +55,9 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ghcr.io/sfostine/petclinic:latest
-            ${{ github.ref_type == 'tag' && format('ghcr.io/sfostine/petclinic:{0}', github.ref_name) || format('ghcr.io/sfostine/petclinic:{0}', github.sha) }}
+            ${{ github.ref_type == 'tag' && format('ghcr.io/{0}/petclinic:{1}', vars.USERNAME, github.ref_name) || format('ghcr.io/{0}/petclinic:{1}', vars.USERNAME, github.sha) }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: target/*.jar
