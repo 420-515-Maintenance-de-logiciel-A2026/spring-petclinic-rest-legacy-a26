@@ -56,8 +56,3 @@ jobs:
           tags: |
             ghcr.io/sfostine/petclinic:latest
             ${{ github.ref_type == 'tag' && format('ghcr.io/{0}/petclinic:{1}', vars.USERNAME, github.ref_name) || format('ghcr.io/{0}/petclinic:{1}', vars.USERNAME, github.sha) }}
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v3
-        with:
-          files: target/*.jar
