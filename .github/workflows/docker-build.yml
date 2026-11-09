@@ -35,7 +35,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          ARGS="-Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}"
+          ARGS="-Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }} -Dsonar.qualitygate.wait=true"
           if [ -n "${{ vars.SONAR_ORGANIZATION }}" ]; then
             ARGS="$ARGS -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}"
           fi
@@ -89,6 +89,7 @@ jobs:
             ${{ github.ref_type == 'tag' && format('ghcr.io/{0}/petclinic:{1}', vars.USERNAME, github.ref_name) || format('ghcr.io/{0}/petclinic:{1}', vars.USERNAME, github.sha) }}
 
       - name: Create GitHub Release
+        if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3
         with:
           files: target/*.jar
