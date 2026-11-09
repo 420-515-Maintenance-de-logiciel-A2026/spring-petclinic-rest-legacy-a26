@@ -84,9 +84,20 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
+          load: true
           tags: |
             ghcr.io/sfostine/petclinic:latest
             ${{ github.ref_type == 'tag' && format('ghcr.io/{0}/petclinic:{1}', vars.USERNAME, github.ref_name) || format('ghcr.io/{0}/petclinic:{1}', vars.USERNAME, github.sha) }}
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: 'ghcr.io/sfostine/petclinic:latest'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
 
       - name: Create GitHub Release
         if: github.ref_type == 'tag'
