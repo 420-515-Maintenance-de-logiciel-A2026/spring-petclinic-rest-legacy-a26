@@ -9,7 +9,7 @@
 #   ./mvnw clean package -DskipTests
 # (le .jar attendu est target/spring-petclinic-rest-4.0.2-S.jar)
 
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:25-jre-alpine
 
 WORKDIR /app
 
