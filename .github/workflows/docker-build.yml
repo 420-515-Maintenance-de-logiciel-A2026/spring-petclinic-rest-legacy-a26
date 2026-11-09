@@ -34,7 +34,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
+        run: |
+          ARGS="-Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}"
+          if [ -n "${{ vars.SONAR_ORGANIZATION }}" ]; then
+            ARGS="$ARGS -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}"
+          fi
+          ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar $ARGS
 
   build-and-push:
     needs: test-and-analyze
