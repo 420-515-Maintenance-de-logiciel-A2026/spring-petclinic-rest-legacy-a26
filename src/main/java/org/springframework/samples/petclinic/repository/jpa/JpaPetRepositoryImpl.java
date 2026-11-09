@@ -86,6 +86,17 @@ public class JpaPetRepositoryImpl implements PetRepository {
         return new PageImpl<>(pets, pageable, total);
     }
 
+    /**
+     * DEMO: méthode volontairement vulnérable pour illustrer l'échec du quality gate
+     * SonarCloud (injection SQL/JPQL via concaténation de chaînes - règle S3649, sévérité Blocker).
+     * À retirer après la démonstration.
+     */
+    @SuppressWarnings("unchecked")
+    public List<Pet> findByNameUnsafe(String name) {
+        String jpql = "SELECT pet FROM Pet pet WHERE pet.name = '" + name + "'";
+        return this.em.createQuery(jpql).getResultList();
+    }
+
 	@Override
 	public void delete(Pet pet) throws DataAccessException {
 		//this.em.remove(this.em.contains(pet) ? pet : this.em.merge(pet));
