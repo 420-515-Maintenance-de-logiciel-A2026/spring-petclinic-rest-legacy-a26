@@ -1,0 +1,10 @@
+image:
+  repository: ghcr.io/sfostine/petclinic-rest
+  tag: "1.0"
+replicaCount: 1
+service:
+  type: LoadBalancer
+  port: 9966
+ingress:
+  enabled: true
+  className: nginx

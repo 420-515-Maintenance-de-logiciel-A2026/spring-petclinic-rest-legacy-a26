@@ -93,3 +93,34 @@ jobs:
         uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3
         with:
           files: target/*.jar
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Connexion à Azure (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Viser le cluster AKS de l'équipe
+        uses: azure/aks-set-context@v4
+        with:
+          resource-group: rg-sfostine
+          cluster-name: aks-sfostine
+
+      - name: Se placer dans le bon namespace
+        run: kubectl config set-context --current --namespace=ns-sfostine
+
+      - name: Déployer la nouvelle image avec Helm
+        run: |
+          helm upgrade petclinic ./petclinic \
+            --set image.tag=${{ github.sha }} \
+            --atomic
+
+      - name: Confirmer que le rollout a réussi
+        run: kubectl rollout status deployment/petclinic
