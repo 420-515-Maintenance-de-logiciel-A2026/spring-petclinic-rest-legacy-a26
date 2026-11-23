@@ -85,8 +85,8 @@ jobs:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ghcr.io/sfostine/petclinic:latest
-            ${{ github.ref_type == 'tag' && format('ghcr.io/{0}/petclinic:{1}', vars.USERNAME, github.ref_name) || format('ghcr.io/{0}/petclinic:{1}', vars.USERNAME, github.sha) }}
+            ghcr.io/sfostine/petclinic-rest:latest
+            ${{ github.ref_type == 'tag' && format('ghcr.io/{0}/petclinic-rest:{1}', vars.USERNAME, github.ref_name) || format('ghcr.io/{0}/petclinic-rest:{1}', vars.USERNAME, github.sha) }}
 
       - name: Create GitHub Release
         if: github.ref_type == 'tag'
