@@ -97,6 +97,9 @@ jobs:
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # requis pour s'authentifier à Azure par OIDC
+      contents: read
     steps:
       - uses: actions/checkout@v5
 
