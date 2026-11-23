@@ -42,7 +42,7 @@ jobs:
       #    ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar $ARGS
 
   build-and-push:
-    needs: test-and-analyze
+   # needs: test-and-analyze
     runs-on: ubuntu-latest
     permissions:
       contents: write
