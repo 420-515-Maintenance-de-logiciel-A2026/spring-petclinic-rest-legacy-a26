@@ -85,6 +85,7 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
+          platforms: linux/amd64,linux/arm64
           tags: |
             ghcr.io/sfostine/petclinic-rest:latest
             ${{ github.ref_type == 'tag' && format('ghcr.io/{0}/petclinic-rest:{1}', vars.USERNAME, github.ref_name) || format('ghcr.io/{0}/petclinic-rest:{1}', vars.USERNAME, github.sha) }}
